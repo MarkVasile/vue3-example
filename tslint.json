@@ -1,0 +1,24 @@
+{
+  "defaultSeverity": "warning",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "linterOptions": {
+    "exclude": [
+      "node_modules/**"
+    ]
+  },
+  "rules": {
+    "quotemark": [true, "single"],
+    "semicolon": [true, "never"],
+    "indent": [true, "spaces", 2],
+    "import-spacing": false,
+    "no-bitwise": false,
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "curly": false,
+    "interface-name": false,
+    "ordered-imports": false,
+    "object-literal-sort-keys": false,
+    "no-consecutive-blank-lines": false
+  }
+}
