@@ -1,4 +1,6 @@
-'use strict'
+/*
+ * Checking version requirements for node, npm
+ */
 const chalk = require('chalk')
 const semver = require('semver')
 const packageConfig = require('../package.json')
@@ -12,15 +14,15 @@ const versionRequirements = [
   {
     name: 'node',
     currentVersion: semver.clean(process.version),
-    versionRequirement: packageConfig.engines.node
-  }
+    versionRequirement: packageConfig.engines.node,
+  },
 ]
 
 if (shell.which('npm')) {
   versionRequirements.push({
     name: 'npm',
     currentVersion: exec('npm --version'),
-    versionRequirement: packageConfig.engines.npm
+    versionRequirement: packageConfig.engines.npm,
   })
 }
 

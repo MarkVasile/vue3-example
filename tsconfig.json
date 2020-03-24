@@ -1,10 +1,17 @@
 {
   "compilerOptions": {
+    "allowJs": true,
+    "declaration": false,
     "target": "esnext",
     "module": "esnext",
     "strict": true,
+    "strictPropertyInitialization": false,
     "allowSyntheticDefaultImports": true,
+    "suppressImplicitAnyIndexErrors": true,
     "noImplicitAny": false, 
+    "noLib": false,
+    "noUnusedLocals": true, // Report error on unused locals
+    "noImplicitReturns": true, // Report error when not all code paths in function return a value.
     "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "node",
@@ -12,10 +19,10 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "outDir": "/dist",
     "types": [
       "vue",
-      "node",
-      "jest"
+      "node"
     ],
     "paths": {
       "@/*": [

@@ -3,7 +3,7 @@
 module.exports = {
   root: true,
   parserOptions: {
-    parser: 'babel-eslint',
+    parser: "@typescript-eslint/parser",
     sourceType: 'module'
   },
   env: {
@@ -35,7 +35,9 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     'comma-dangle': ["error", {
       "arrays": "always-multiline",
+      "objects": "always-multiline",
       "imports": "always-multiline"
-    }]
+    }],
+    'vue/valid-template-root': 0
   }
 }

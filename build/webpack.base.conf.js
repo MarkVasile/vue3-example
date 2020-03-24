@@ -1,14 +1,17 @@
-'use strict'
+/*
+ * Webpack configurtion used as base for both dev and prod
+ */
 const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 const { VueLoaderPlugin } = require('vue-loader')
-const webpack = require("webpack")
-const defineConfig = require("../config/config")
-// const HappyPack = require('happypack')
-// const os = require('os')
-// HappyPack.ThreadPool({ size: os.cpus().length })
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const WebpackMd5Hash = require('webpack-md5-hash')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const defineConfig = require('../config/config')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -21,8 +24,8 @@ const createLintingRule = () => ({
   include: [resolve('src'), resolve('test')],
   options: {
     formatter: require('eslint-friendly-formatter'),
-    emitWarning: !config.dev.showEslintErrorsInOverlay
-  }
+    emitWarning: !config.dev.showEslintErrorsInOverlay,
+  },
 })
 
 let DEFINE = {}
@@ -43,14 +46,18 @@ if (process.env.NODE_ENV === 'production') {
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: './src/main.ts'
+    app: './src/main.ts',
   },
   output: {
-    path: config.build.assetsRoot,
-    filename: '[name].js',
+    /**
+         * With zero configuration,
+         *   clean-webpack-plugin will remove files inside the directory below
+         */
+    path: path.resolve(process.cwd(), 'dist'),
+    filename: '[name].[hash].js',
     publicPath: process.env.NODE_ENV === 'production'
       ? config.build.assetsPublicPath
-      : config.dev.assetsPublicPath
+      : config.dev.assetsPublicPath,
   },
   resolve: {
     extensions: ['.js', '.ts', '.vue', '.json'],
@@ -59,9 +66,9 @@ module.exports = {
       // is a simple `export * from '@vue/runtime-dom`. However having this
       // extra re-export somehow causes webpack to always invalidate the module
       // on the first HMR update and causes the page to reload.
-      'vue': '@vue/runtime-dom',
-      '@': resolve('src')
-    }
+      vue: '@vue/runtime-dom',
+      '@': resolve('src'),
+    },
   },
   module: {
     rules: [
@@ -69,66 +76,68 @@ module.exports = {
       {
         test: /\.vue$/,
         use: [
-          // {
-          //   loader: './build/loader/my-loader'
-          // },
           {
             loader: 'vue-loader',
-            options: vueLoaderConfig
-          }
-        ]
+            options: vueLoaderConfig,
+          },
+        ],
       },
       {
         test: /\.ts$/,
         exclude: /node_modules/,
         loader: 'ts-loader',
-        // '*.vue' ファイルも TS として認識させるためのオプション
         options: {
           appendTsSuffixTo: [/\.vue$/],
         },
       },
       {
         test: /\.js$/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         options: {
-          cacheDirectory: true
+          cacheDirectory: true,
         },
         exclude: [resolve('node_modules/@babel')],
-        include: [resolve('src'), resolve('test'), resolve('node_modules/@vue')]
+        include: [resolve('src'), resolve('test'), resolve('node_modules/@vue')],
       },
       {
         resourceQuery: /vue&type=template/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         options: {
-          cacheDirectory: true
+          cacheDirectory: true,
         },
-        exclude: [resolve('node_modules')]
+        exclude: [resolve('node_modules')],
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('img/[name].[hash:7].[ext]')
-        }
+          bypassOnDebug: true,
+          name: utils.assetsPath('img/[name].[hash:7].[ext]'),
+        },
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('media/[name].[hash:7].[ext]')
-        }
+          name: utils.assetsPath('media/[name].[hash:7].[ext]'),
+        },
       },
       {
-        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-        loader: 'url-loader',
-        options: {
-          limit: 10000,
-          name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
-        }
-      }
-    ]
+        test: /\.(woff(2)?|ttf|eot|otf)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              limit: 10000,
+              name: utils.assetsPath('fonts/[name].[hash:7].[ext]'),
+              outputPath: 'fonts/',
+            },
+          },
+        ],
+      },
+    ],
   },
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
@@ -140,10 +149,21 @@ module.exports = {
     fs: 'empty',
     net: 'empty',
     tls: 'empty',
-    child_process: 'empty'
+    child_process: 'empty',
   },
   plugins: [
     new VueLoaderPlugin(),
-    new webpack.DefinePlugin(DEFINE)
-  ]
+    new webpack.DefinePlugin(DEFINE),
+    new CleanWebpackPlugin(),
+    new MiniCssExtractPlugin({
+      filename: 'style.[contenthash].css',
+      chunkFilename: '[contenthash].css',
+    }),
+    new HtmlWebpackPlugin({
+      inject: false,
+      template: 'src/index.html',
+      filename: 'index.html',
+    }),
+    new WebpackMd5Hash(),
+  ],
 }

@@ -1,7 +1,8 @@
-'use strict'
+/*
+ * Helper functions of Assets and CSS loaders
+ */
 const path = require('path')
 const config = require('../config')
-// const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const packageConfig = require('../package.json')
 
@@ -19,15 +20,15 @@ exports.cssLoaders = function (options) {
   const cssLoader = {
     loader: 'css-loader',
     options: {
-      sourceMap: options.sourceMap
-    }
+      sourceMap: options.sourceMap,
+    },
   }
 
   const postcssLoader = {
     loader: 'postcss-loader',
     options: {
-      sourceMap: options.sourceMap
-    }
+      sourceMap: options.sourceMap,
+    },
   }
 
   // generate loader string to be used with extract text plugin
@@ -38,24 +39,21 @@ exports.cssLoaders = function (options) {
       loaders.push({
         loader: loader + '-loader',
         options: Object.assign({}, loaderOptions, {
-          sourceMap: options.sourceMap
-        })
+          sourceMap: options.sourceMap,
+        }),
       })
     }
 
     // Extract CSS when that option is specified
     // (which is the case during production build)
     if (options.extract) {
-      // return ExtractTextPlugin.extract({
-      //   use: loaders,
-      //   fallback: 'vue-style-loader',
-      //   publicPath: '../../'
-      // })
       return [{
         loader: MiniCssExtractPlugin.loader,
         options: {
-          publicPath: '../../'
-        }
+          publicPath: '../../',
+          esModule: true,
+          hmr: process.env.NODE_ENV === 'development',
+        },
       }].concat(loaders)
     } else {
       return ['vue-style-loader'].concat(loaders)
@@ -70,7 +68,7 @@ exports.cssLoaders = function (options) {
     sass: generateLoaders('sass', { indentedSyntax: true }),
     scss: generateLoaders('sass'),
     stylus: generateLoaders('stylus'),
-    styl: generateLoaders('stylus')
+    styl: generateLoaders('stylus'),
   }
 }
 
@@ -83,7 +81,7 @@ exports.styleLoaders = function (options) {
     const loader = loaders[extension]
     output.push({
       test: new RegExp('\\.' + extension + '$'),
-      use: loader
+      use: loader,
     })
   }
 
@@ -103,7 +101,7 @@ exports.createNotifierCallback = () => {
       title: packageConfig.name,
       message: severity + ': ' + error.name,
       subtitle: filename || '',
-      icon: path.join(__dirname, 'logo.png')
+      icon: path.join(__dirname, 'logo.png'),
     })
   }
 }

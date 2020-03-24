@@ -1,2 +1,4 @@
 import router from './router'
-export default router
+import routerHistory from './router'
+
+export { router, routerHistory }
